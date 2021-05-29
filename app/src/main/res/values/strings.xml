@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">BlogViewer</string>
+    <string name="app_name">Blog Viewer</string>
+    <string name="blog_posts">Blog Posts</string>
 </resources>
