@@ -6,17 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blogviewer.adapter.BlogAdapter
+import com.example.blogviewer.io.model.BlogDetailModel
+import com.example.blogviewer.io.model.BlogModel
+import com.example.blogviewer.io.model.UserModel
 import com.example.blogviewer.io.viewmodel.BlogViewModel
 
 
-class BlogListFragment : Fragment(),
-    BlogAdapter.OnItemClickListener {
+class BlogListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
+    private lateinit var blogViewModel: BlogViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,6 +28,7 @@ class BlogListFragment : Fragment(),
         val rootView = inflater.inflate(R.layout.fragment_blog_list, container, false)
         setUpViews(rootView)
 
+        blogViewModel = ViewModelProvider.NewInstanceFactory().create(BlogViewModel::class.java)
         activity?.let { getBlogs(it) }
 
         return rootView
@@ -38,21 +41,39 @@ class BlogListFragment : Fragment(),
     }
 
     private fun getBlogs(activity: Activity) {
-        val blogViewModel: BlogViewModel =
-            ViewModelProvider.NewInstanceFactory().create(BlogViewModel::class.java)
         blogViewModel.getBlogList()
-        blogViewModel.blogListLiveData.observe(this, Observer {
+        blogViewModel.blogListLiveData.observe(this, {
+            getUsers(activity)
+        })
+    }
+
+    private fun getUsers(activity: Activity) {
+        blogViewModel.getUserList()
+        blogViewModel.userListLiveData.observe(this, {
             val adapter = BlogAdapter(
                 activity,
-                it, this
+                prepareData(
+                    blogViewModel.blogListLiveData.value,
+                    blogViewModel.userListLiveData.value
+                ),
+                activity as BlogAdapter.OnItemClickListener
             )
             recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         })
     }
 
-    override fun onItemClick(blogModel: BlogModel) {
-        //TODO - switch to detail fragment
-        //intent.putExtra("blog", blogModel)
+    private fun prepareData(
+        blogList: List<BlogModel>?,
+        userList: List<UserModel>?
+    ): List<BlogDetailModel> {
+        var list = ArrayList<BlogDetailModel>()
+        if (blogList != null) {
+            for (blog: BlogModel in blogList) {
+                list.add(BlogDetailModel(blog, userList?.find { it.id == blog.userId }))
+            }
+        }
+
+        return list
     }
 }

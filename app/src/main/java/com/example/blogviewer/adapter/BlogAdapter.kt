@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.blogviewer.BlogModel
 import com.example.blogviewer.R
+import com.example.blogviewer.io.model.BlogDetailModel
 
 class BlogAdapter(
     val context: Context,
-    var list: List<BlogModel>,
+    private var list: List<BlogDetailModel>,
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<BlogAdapter.ViewHolder>() {
 
@@ -31,10 +31,10 @@ class BlogAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val blogModel = list[position]
+        val blogDetailModel = list[position]
 
-        holder.blogTitleTextView.text = blogModel.title
-        holder.itemView.setOnClickListener { listener.onItemClick(blogModel) }
+        holder.blogTitleTextView.text = blogDetailModel.blogModel.title
+        holder.itemView.setOnClickListener { listener.onItemClick(blogDetailModel) }
     }
 
     override fun getItemCount(): Int {
@@ -42,6 +42,6 @@ class BlogAdapter(
     }
 
     interface OnItemClickListener {
-        fun onItemClick(blogModel: BlogModel)
+        fun onItemClick(blogDetailModel: BlogDetailModel)
     }
 }
