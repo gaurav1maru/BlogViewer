@@ -1,6 +1,5 @@
 package com.example.blogviewer.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +9,9 @@ import com.example.blogviewer.R
 import com.example.blogviewer.io.model.BlogDetailModel
 
 class BlogAdapter(
-    val context: Context,
     private var list: List<BlogDetailModel>,
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<BlogAdapter.ViewHolder>() {
-
-    private var mSectionPositions: ArrayList<Int>? = null
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var blogTitleTextView: AppCompatTextView = v.findViewById(R.id.blogTitleTextView)
@@ -33,7 +29,9 @@ class BlogAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val blogDetailModel = list[position]
 
-        holder.blogTitleTextView.text = blogDetailModel.blogModel.title
+        val blogTitle: String = blogDetailModel.blogModel.title
+        val userName: String? = blogDetailModel.userModel?.name
+        holder.blogTitleTextView.text = "Read \"$blogTitle\" by $userName"
         holder.itemView.setOnClickListener { listener.onItemClick(blogDetailModel) }
     }
 

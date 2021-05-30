@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onItemClick(blogDetailModel: BlogDetailModel) {
         Toast.makeText(
-            this, "Hey, you selected " + blogDetailModel.blogModel.title + "!",
+            this, "You selected " + blogDetailModel.blogModel.title + "!",
             Toast.LENGTH_SHORT
         ).show()
         val detailsFragment =

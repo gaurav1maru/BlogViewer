@@ -1,62 +1,60 @@
 package com.example.blogviewer.io.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blogviewer.io.api.ApiInterface
+import com.example.blogviewer.io.api.ApiAdapter
 import com.example.blogviewer.io.model.BlogModel
 import com.example.blogviewer.io.model.UserModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
-class BlogViewModel : ViewModel() {
+class BlogViewModel : ViewModel(), CoroutineScope by MainScope() {
     val blogListLiveData: MutableLiveData<List<BlogModel>> = MutableLiveData<List<BlogModel>>()
     val userListLiveData: MutableLiveData<List<UserModel>> = MutableLiveData<List<UserModel>>()
 
-    fun getBlogList() {
-        val apiInterface = ApiInterface.create().getBlogList()
-        apiInterface.enqueue(object : Callback<List<BlogModel>> {
-            override fun onResponse(
-                call: Call<List<BlogModel>>?,
-                response: Response<List<BlogModel>>?
-            ) {
-                //TODO - delete log
-                Log.d("Blog response", response!!.body()[0].title)
-                if (response != null && response.isSuccessful && response.body() != null) {
-                    try {
-                        blogListLiveData.postValue(response.body())
-                    } catch (e: Exception) {
-                        blogListLiveData.postValue(arrayListOf())
-                    }
+    fun fetchBlogList() {
+        launch(Dispatchers.Main) {
+            try {
+                val response = ApiAdapter.apiClient.getBlogList()
+                if (response.isSuccessful && response.body() != null) {
+                    blogListLiveData.postValue(response.body())
+                } else {
+                    blogListLiveData.postValue(arrayListOf())
                 }
-            }
-
-            override fun onFailure(call: Call<List<BlogModel>>?, t: Throwable?) {
+            } catch (e: Exception) {
                 //TODO - handle failure gracefully
+                Log.e("fetchBlogList", "fail")
+                e.printStackTrace()
             }
-        })
+        }
     }
 
-    fun getUserList() {
-        val apiInterface = ApiInterface.create().getUserList()
-        apiInterface.enqueue(object : Callback<List<UserModel>> {
-            override fun onResponse(
-                call: Call<List<UserModel>>?,
-                response: Response<List<UserModel>>?
-            ) {
-                if (response != null && response.isSuccessful && response.body() != null) {
-                    try {
-                        userListLiveData.postValue(response.body())
-                    } catch (e: Exception) {
-                        userListLiveData.postValue(arrayListOf())
-                    }
-                }
-            }
+    fun getBlogList(): LiveData<List<BlogModel>> {
+        return blogListLiveData
+    }
 
-            override fun onFailure(call: Call<List<UserModel>>?, t: Throwable?) {
+    fun fetchUserList() {
+        launch(Dispatchers.Main) {
+            try {
+                val response = ApiAdapter.apiClient.getUserList()
+                if (response.isSuccessful && response.body() != null) {
+                    userListLiveData.postValue(response.body())
+                } else {
+                    userListLiveData.postValue(arrayListOf())
+                }
+            } catch (e: Exception) {
                 //TODO - handle failure gracefully
+                Log.e("fetchUserList", "fail")
+                e.printStackTrace()
             }
-        })
+        }
+    }
+
+    fun getUserList(): LiveData<List<UserModel>> {
+        return userListLiveData
     }
 }
