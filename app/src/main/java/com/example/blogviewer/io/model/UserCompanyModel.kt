@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class UserCompanyModel(
-    val name: String,
-    val catchPhrase: String,
-    val bs: String
+    var name: String? = null,
+    var catchPhrase: String? = null,
+    var bs: String? = null
 ) : Parcelable

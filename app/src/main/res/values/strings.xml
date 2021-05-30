@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Blog Viewer</string>
+    <string name="ui_test_blog_row">Read \"non est facere\" by Chelsey Dietrich</string>
 </resources>

@@ -5,6 +5,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class BlogDetailModel(
-    val blogModel: BlogModel,
-    val userModel: UserModel?
+    var blogModel: BlogModel? = null,
+    var userModel: UserModel? = null
 ) : Parcelable

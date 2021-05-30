@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blogviewer.adapter.BlogAdapter
@@ -16,10 +18,10 @@ import com.example.blogviewer.io.model.UserModel
 import com.example.blogviewer.io.viewmodel.BlogViewModel
 
 
-class BlogListFragment : Fragment() {
+class BlogListFragment : Fragment(),
+    BlogAdapter.OnItemClickListener {
     private lateinit var blogViewModel: BlogViewModel
     private var binding: FragmentBlogListBinding? = null
-    private var data: List<BlogDetailModel> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +33,7 @@ class BlogListFragment : Fragment() {
         blogViewModel = ViewModelProvider.NewInstanceFactory().create(BlogViewModel::class.java)
         activity?.let {
             setUpViews(it)
-            getBlogs(it)
+            getBlogs()
         }
 
         return rootView
@@ -42,14 +44,14 @@ class BlogListFragment : Fragment() {
         binding?.recyclerView?.layoutManager = mLayoutManager
     }
 
-    private fun getBlogs(activity: Activity) {
+    private fun getBlogs() {
         blogViewModel.fetchBlogList()
         blogViewModel.blogListLiveData.observe(this, {
-            getUsers(activity)
+            getUsers()
         })
     }
 
-    private fun getUsers(activity: Activity) {
+    private fun getUsers() {
         blogViewModel.fetchUserList()
         blogViewModel.userListLiveData.observe(this, {
             val adapter = BlogAdapter(
@@ -57,7 +59,7 @@ class BlogListFragment : Fragment() {
                     blogViewModel.blogListLiveData.value,
                     blogViewModel.userListLiveData.value
                 ),
-                activity as BlogAdapter.OnItemClickListener
+                this
             )
             binding?.recyclerView?.adapter = adapter
             adapter.notifyDataSetChanged()
@@ -76,6 +78,22 @@ class BlogListFragment : Fragment() {
         }
 
         return list
+    }
+
+    override fun onItemClick(blogDetailModel: BlogDetailModel) {
+        val act: FragmentActivity = activity ?: return
+
+        Toast.makeText(
+            activity, "You selected " + blogDetailModel.blogModel?.title + "!",
+            Toast.LENGTH_SHORT
+        ).show()
+        val detailsFragment =
+            BlogDetailsFragment.newInstance(blogDetailModel)
+        act.supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, detailsFragment, "blogDetails")
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onDestroyView() {

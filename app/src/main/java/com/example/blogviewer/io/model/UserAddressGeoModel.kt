@@ -5,6 +5,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class UserAddressGeoModel(
-    val lat: String,
-    val lng: String
+    var lat: String? = null,
+    var lng: String? = null
 ) : Parcelable

@@ -29,7 +29,7 @@ class BlogAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val blogDetailModel = list[position]
 
-        val blogTitle: String = blogDetailModel.blogModel.title
+        val blogTitle: String? = blogDetailModel.blogModel?.title
         val userName: String? = blogDetailModel.userModel?.name
         holder.blogTitleTextView.text = "Read \"$blogTitle\" by $userName"
         holder.itemView.setOnClickListener { listener.onItemClick(blogDetailModel) }
