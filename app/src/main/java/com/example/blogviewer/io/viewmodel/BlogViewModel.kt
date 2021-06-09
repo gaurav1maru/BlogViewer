@@ -1,6 +1,7 @@
 package com.example.blogviewer.io.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blogviewer.io.api.ApiAdapter
@@ -33,6 +34,10 @@ class BlogViewModel : ViewModel(), CoroutineScope by MainScope() {
         }
     }
 
+    fun getBlogList(): LiveData<List<BlogModel>> {
+        return blogListLiveData
+    }
+
     fun fetchUserList() {
         launch(Dispatchers.Main) {
             try {
@@ -49,6 +54,10 @@ class BlogViewModel : ViewModel(), CoroutineScope by MainScope() {
                 userListLiveData.postValue(arrayListOf())
             }
         }
+    }
+
+    fun getUserList(): LiveData<List<UserModel>> {
+        return userListLiveData
     }
 
     fun fetchCommentList() {
