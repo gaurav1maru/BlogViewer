@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.blogviewer.databinding.FragmentBlogDetailsBinding
 import com.example.blogviewer.io.model.BlogDetailModel
 import com.example.blogviewer.io.model.BlogModel
+import com.example.blogviewer.io.model.CommentModel
 import com.example.blogviewer.io.model.UserModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -53,6 +54,8 @@ class BlogDetailsFragment : Fragment() {
             if (blogModel != null) {
                 val sb = StringBuilder()
                 sb.append("Blog Details\n\n\n")
+                val commentModel: CommentModel? = model.commentModel
+                sb.append("Comment - " + commentModel?.body + " by " + commentModel?.name + "\n\n")
                 sb.append("Id - " + blogModel.id + "\n\n")
                 sb.append("Title - " + blogModel.title + "\n\n")
                 sb.append("Body - " + blogModel.body + "\n\n")

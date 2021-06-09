@@ -14,6 +14,7 @@ import com.example.blogviewer.adapter.BlogAdapter
 import com.example.blogviewer.databinding.FragmentBlogListBinding
 import com.example.blogviewer.io.model.BlogDetailModel
 import com.example.blogviewer.io.model.BlogModel
+import com.example.blogviewer.io.model.CommentModel
 import com.example.blogviewer.io.model.UserModel
 import com.example.blogviewer.io.viewmodel.BlogViewModel
 
@@ -54,10 +55,20 @@ class BlogListFragment : Fragment(),
     private fun getUsers() {
         blogViewModel.fetchUserList()
         blogViewModel.userListLiveData.observe(this, {
+            //TODO - can do lay loading on list item click if comments are not needed here
+            //use API endpoint "/posts/{postId}/comments" instead of "comments"
+            getComments()
+        })
+    }
+
+    private fun getComments() {
+        blogViewModel.fetchCommentList()
+        blogViewModel.commentListLiveData.observe(this, {
             val adapter = BlogAdapter(
                 prepareData(
                     blogViewModel.blogListLiveData.value,
-                    blogViewModel.userListLiveData.value
+                    blogViewModel.userListLiveData.value,
+                    blogViewModel.commentListLiveData.value
                 ),
                 this
             )
@@ -68,13 +79,17 @@ class BlogListFragment : Fragment(),
 
     private fun prepareData(
         blogList: List<BlogModel>?,
-        userList: List<UserModel>?
+        userList: List<UserModel>?,
+        commentList: List<CommentModel>?
     ): List<BlogDetailModel> {
         val list = ArrayList<BlogDetailModel>()
-        if (blogList != null) {
-            for (blog: BlogModel in blogList) {
-                list.add(BlogDetailModel(blog, userList?.find { it.id == blog.userId }))
-            }
+        blogList?.forEach { blog ->
+            list.add(BlogDetailModel(
+                blog,
+                userList?.find { it.id == blog.userId },
+                //TODO - this gets just the first comment, it needs to be the list
+                commentList?.find { it.postId == blog.id }
+            ))
         }
 
         return list
